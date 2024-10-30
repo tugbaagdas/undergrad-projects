@@ -1,0 +1,339 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "2bfc3443-2d0d-4928-8574-3acffe169fff",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Requirement already satisfied: pandas in /opt/anaconda3/lib/python3.12/site-packages (2.2.2)\n",
+      "Requirement already satisfied: scikit-learn in /opt/anaconda3/lib/python3.12/site-packages (1.4.2)\n",
+      "Requirement already satisfied: seaborn in /opt/anaconda3/lib/python3.12/site-packages (0.13.2)\n",
+      "Requirement already satisfied: matplotlib in /opt/anaconda3/lib/python3.12/site-packages (3.8.4)\n",
+      "Requirement already satisfied: numpy>=1.26.0 in /opt/anaconda3/lib/python3.12/site-packages (from pandas) (1.26.4)\n",
+      "Requirement already satisfied: python-dateutil>=2.8.2 in /opt/anaconda3/lib/python3.12/site-packages (from pandas) (2.9.0.post0)\n",
+      "Requirement already satisfied: pytz>=2020.1 in /opt/anaconda3/lib/python3.12/site-packages (from pandas) (2024.1)\n",
+      "Requirement already satisfied: tzdata>=2022.7 in /opt/anaconda3/lib/python3.12/site-packages (from pandas) (2023.3)\n",
+      "Requirement already satisfied: scipy>=1.6.0 in /opt/anaconda3/lib/python3.12/site-packages (from scikit-learn) (1.13.1)\n",
+      "Requirement already satisfied: joblib>=1.2.0 in /opt/anaconda3/lib/python3.12/site-packages (from scikit-learn) (1.4.2)\n",
+      "Requirement already satisfied: threadpoolctl>=2.0.0 in /opt/anaconda3/lib/python3.12/site-packages (from scikit-learn) (2.2.0)\n",
+      "Requirement already satisfied: contourpy>=1.0.1 in /opt/anaconda3/lib/python3.12/site-packages (from matplotlib) (1.2.0)\n",
+      "Requirement already satisfied: cycler>=0.10 in /opt/anaconda3/lib/python3.12/site-packages (from matplotlib) (0.11.0)\n",
+      "Requirement already satisfied: fonttools>=4.22.0 in /opt/anaconda3/lib/python3.12/site-packages (from matplotlib) (4.51.0)\n",
+      "Requirement already satisfied: kiwisolver>=1.3.1 in /opt/anaconda3/lib/python3.12/site-packages (from matplotlib) (1.4.4)\n",
+      "Requirement already satisfied: packaging>=20.0 in /opt/anaconda3/lib/python3.12/site-packages (from matplotlib) (23.2)\n",
+      "Requirement already satisfied: pillow>=8 in /opt/anaconda3/lib/python3.12/site-packages (from matplotlib) (10.3.0)\n",
+      "Requirement already satisfied: pyparsing>=2.3.1 in /opt/anaconda3/lib/python3.12/site-packages (from matplotlib) (3.0.9)\n",
+      "Requirement already satisfied: six>=1.5 in /opt/anaconda3/lib/python3.12/site-packages (from python-dateutil>=2.8.2->pandas) (1.16.0)\n"
+     ]
+    }
+   ],
+   "source": [
+    "!pip install pandas scikit-learn seaborn matplotlib\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "9d8cdee4-8788-48a1-a647-2bfd97e02a10",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import pandas as pd\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "f8df7661-a186-47c5-8de6-25118d33ed31",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "   movieId                               title  \\\n",
+      "0        1                    Toy Story (1995)   \n",
+      "1        2                      Jumanji (1995)   \n",
+      "2        3             Grumpier Old Men (1995)   \n",
+      "3        4            Waiting to Exhale (1995)   \n",
+      "4        5  Father of the Bride Part II (1995)   \n",
+      "\n",
+      "                                        genres  \n",
+      "0  Adventure|Animation|Children|Comedy|Fantasy  \n",
+      "1                   Adventure|Children|Fantasy  \n",
+      "2                               Comedy|Romance  \n",
+      "3                         Comedy|Drama|Romance  \n",
+      "4                                       Comedy  \n"
+     ]
+    }
+   ],
+   "source": [
+    "# Load the data\n",
+    "data = pd.read_csv('movies.csv')\n",
+    "\n",
+    "# Display the first few rows of the dataset\n",
+    "print(data.head())\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "ce99bee4-4533-43a0-a9af-3f3ccd44bd6a",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Missing values:\n",
+      " movieId    0\n",
+      "title      0\n",
+      "genres     0\n",
+      "dtype: int64\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Check for missing values\n",
+    "print(\"Missing values:\\n\", data.isnull().sum())\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "e22bb092-b09f-4273-8646-1308cf27bd65",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Drop rows with missing values\n",
+    "data = data.dropna()\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "29ee0e32-00c4-461b-8790-976da548073d",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Convert genres into a list format for multi-label classification\n",
+    "data['genres'] = data['genres'].apply(lambda x: x.split(','))\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "9c93e6bb-98af-435a-843d-622ce5aaeb8c",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from sklearn.feature_extraction.text import TfidfVectorizer\n",
+    "from scipy.sparse import hstack\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "1ad32a62-7142-4b2c-b4cf-228dc75adc31",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Index(['movieId', 'title', 'genres'], dtype='object')\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Check the column names\n",
+    "print(data.columns)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "c7a58a2b-4c13-4ab8-b2bc-a6034bd09da4",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Vectorizing the title and description\n",
+    "tfidf_vectorizer_title = TfidfVectorizer()\n",
+    "tfidf_vectorizer_genres = TfidfVectorizer()\n",
+    "\n",
+    "title_features = tfidf_vectorizer_title.fit_transform(data['title'])\n",
+    "description_features = tfidf_vectorizer_genres.fit_transform(data['genres'])  # Update if necessary\n",
+    "\n",
+    "# Combine features\n",
+    "features = hstack([title_features, genres_features])\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "id": "03476f63-72d6-45da-b4ba-2c9432a66bd9",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from sklearn.preprocessing import MultiLabelBinarizer\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "id": "3c28174b-65a5-49d3-bc2f-9b533c9a7a88",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "mlb = MultiLabelBinarizer()\n",
+    "y = mlb.fit_transform(data['genres'])\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "id": "ff7fc985-2136-49fd-b78d-6f50124b7888",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from sklearn.model_selection import train_test_split\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "id": "34f9c41a-6a5f-4205-97f3-566feed98b8c",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "X_train, X_test, y_train, y_test = train_test_split(title_features, y, test_size=0.2, random_state=42)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "id": "bd9d110b-87b9-4782-99ab-0f7fec37d261",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from sklearn.svm import SVC\n",
+    "from sklearn.multiclass import OneVsRestClassifier\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "b868ef4a-b18c-486b-a3fe-bbf31f82350b",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "svm_classifier = OneVsRestClassifier(SVC(kernel='linear', probability=True))\n",
+    "svm_classifier.fit(X_train, y_train)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "55bb75c4-8057-45b9-8426-1177b27c0b36",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "y_pred = svm_classifier.predict(X_test)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "1ddaa035-6d0e-4ff5-9439-9e2ab1a8d677",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "1569f5a6-6206-4f22-a2e9-f919b1a29e4d",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "accuracy = accuracy_score(y_test, y_pred)\n",
+    "precision = precision_score(y_test, y_pred, average='weighted')\n",
+    "recall = recall_score(y_test, y_pred, average='weighted')\n",
+    "f1 = f1_score(y_test, y_pred, average='weighted')\n",
+    "\n",
+    "# Print evaluation metrics\n",
+    "print(f'Accuracy: {accuracy:.2f}')\n",
+    "print(f'Precision: {precision:.2f}')\n",
+    "print(f'Recall: {recall:.2f}')\n",
+    "print(f'F1 Score: {f1:.2f}')\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "888b11c5-26e0-4340-94ba-e387cccf4b7a",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import seaborn as sns\n",
+    "import matplotlib.pyplot as plt\n",
+    "from sklearn.metrics import confusion_matrix\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "07003be8-9102-44c3-8f04-f1312ba4f45d",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Compute confusion matrix\n",
+    "conf_matrix = confusion_matrix(y_test.argmax(axis=1), y_pred.argmax(axis=1))\n",
+    "\n",
+    "# Plot confusion matrix\n",
+    "plt.figure(figsize=(10, 7))\n",
+    "sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', xticklabels=mlb.classes_, yticklabels=mlb.classes_)\n",
+    "plt.ylabel('Actual Genre')\n",
+    "plt.xlabel('Predicted Genre')\n",
+    "plt.title('Confusion Matrix for SVM Classifier')\n",
+    "plt.show()\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "f18282da-2f94-491a-b6fd-6da5b6d3d43f",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.12.4"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
